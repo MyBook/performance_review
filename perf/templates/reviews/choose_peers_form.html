@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block title %}Выбрать пиров{% endblock %}
+
+{% block content %}
+<div class="container">
+
+  <div class="row">
+    <div class="col-sm-9">
+      <h2>Респонденты за {{ current_interval }}</h2>
+      <p>Выберите респонедентов, чтобы они оценили твою работу. Это коллеги, с кем вы работали в последние три месяца.
+        Постарайтесь сюда включить всех, чей отзыв вы сочтете важным.</p>
+
+      Руководитель и подчинённые автоматически выбраны.
+      <p>Всего можно выбрать 5-7 респондентов.</p>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-sm-8">
+      <style>
+        #id_peers li {margin-top: 1rem; list-style: none;}
+        #id_peers li ul li {margin-top: 0; list-style: none;}
+        #id_peers label {margin-bottom: 0}
+      </style>
+      <form method="post">
+        {% csrf_token %}
+        {{ form.peers }}
+
+        <div class="form-group">
+          <button type="submit" class="btn btn-primary">Запросить оценку</button>
+        </div>
+      </form>
+    </div>
+    <div class="col-sm-4" style="color:gray; font-size: 80%;">
+      Не надо выбирать людей, с которыми вы мало взаимодействовали, потому что они не смогут оценить вашу работу.<br><br>
+      Руководитель может добавить новых или убрать выбранных вами респондентов, если сочтет, что это
+      необходимо для более объективной оценки, либо чтобы снизить нагрузку на ревьюера.
+    </div>
+  </div>
+
+</div>
+{% endblock content %}

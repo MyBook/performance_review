@@ -1,0 +1,64 @@
+<!-- start copy -->
+<tr>
+  <td align="left" bgcolor="#ffffff" style="padding: 24px; font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif; font-size: 16px; line-height: 24px;">
+    <p>Привет!</p>
+
+    <p>
+      Ребята запросили от тебя обратную связь по их работе за {{ current_interval }}.
+      Это всё происходит в рамках <a href="https://{{ domain }}">Performance Review</a>.
+    </p>
+
+    <p>
+      <ul style="list-style: none">
+        {% for review in current_reviews %}
+          <li><a href="https://{{ domain }}{{ review.get_absolute_url }}">{{ review.target }}</a></li>
+        {% endfor %}
+      </ul>
+    </p>
+  </td>
+</tr>
+<!-- end copy -->
+
+<!-- start button -->
+<tr>
+  <td align="left" bgcolor="#ffffff">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr>
+        <td align="center" bgcolor="#ffffff" style="padding: 12px;">
+          <table border="0" cellpadding="0" cellspacing="0">
+            <tr>
+              <td align="center" bgcolor="#1a82e2" style="border-radius: 6px;">
+                <a href="https://{{ domain }}{% url 'reviews:add-reviews' current_interval %}" target="_blank"
+                   style="display: inline-block; padding: 16px 36px; font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif; font-size: 16px; color: #ffffff; text-decoration: none; border-radius: 6px;">Оценить работу</a>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- end button -->
+
+<!-- start copy -->
+<tr>
+  <td align="left" bgcolor="#ffffff" style="padding: 24px; font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif; font-size: 16px; line-height: 24px;">
+
+    <p>Прошу написать максимально развёрнутый фидбэк каждому из коллег.
+    Не стоит писать коротких отзывов из одного предложения, к сожалению, подобный
+    фидбэк неэффективен и не принесёт коллеге пользы.</p>
+
+    <p>Критерии:</p>
+    <ul>
+      <li>конструктивный: подсказывает, что человеку нужно делать или перестать делать;</li>
+      <li>конкретный: содержит факты, подробности. "Было некомфортно работать с Петей" – недостаточно для понимания ситуации.</li>
+      <li>личный: говорим за себя, не транслируем чужое мнение;</li>
+      <li>не нужно выдумывать какие-то факты, выберите пункт "Не взаимодействовал, оценить не могу".</li>
+    </ul>
+
+    <p>Прошу это сделать до {{ deadline|date:"d.m.Y" }}.</p>
+
+    <p><i>{{ email_signature }}</i></p>
+  </td>
+</tr>
+<!-- end copy -->

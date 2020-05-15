@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% load static %}
+{% load crispy_forms_tags bootstrap_filters %}
+
+{% block title %}Цели {{ target }} на {{ current_interval }}{% endblock %}
+
+{% block content %}
+<div class="container">
+
+  <div class="row align-items-end" style="margin-top: 20px">
+    <div class="col-sm-8">
+      <h2>Цели <a href="{% url 'users:detail' current_interval target.email %}">{{ target }}</a>
+        на {{ current_interval }}</h2>
+      {% if is_editable %}
+      <p>Руководитель сам определяет каким образом ставить цели своим людям.</p>
+
+      <p>Уместно проверить, что цели удовлетворяет <small>SMART</small>:<br>
+      - точность (ясно, чего конкретно нужно добиться)<br>
+      - измеримость (понятны условия достижения цели и как это проверить)<br>
+      - принятие (исполнитель согласился с целью)<br>
+      - достижимость (цель выполнима в текущих ограничениях)<br>
+      </p>
+
+      <p><strong>Цели будут видны только сотруднику и его менеджеру.</strong></p>
+      <form method="post">{% csrf_token %}
+        <fieldset>
+        {{ goal_form|crispy }}
+        </fieldset>
+        <div class="form-group">
+          {% if object %}
+            <button type="submit" class="btn btn-primary" name="action">Обновить цели {{ object.target }}</button>
+          {% else %}
+            <button type="submit" class="btn btn-primary" name="action">Сохранить цели {{ object.target }}</button>
+          {% endif %}
+        </div>
+      </form>
+      {% else %}
+        {{ goal_form.text.value|linebreaksbr }}
+      {% endif %}
+    </div>
+    <div class="col-sm-4" style="color:gray; font-size: 80%; padding-bottom: 70px">
+      {% if previous_goal %}
+      <div style="margin-top: 20px">
+        <a href="{{ previous_goal.get_absolute_url }}">
+          Цели {{ previous_goal.target }} на {{ previous_goal.interval }}
+        </a><br><br>
+        {% endif %}
+      </div>
+    </div>
+
+  </div>
+
+</div>
+{% endblock content %}

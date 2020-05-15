@@ -1,0 +1,132 @@
+{% extends "base.html" %}
+{% load static bootstrap_filters %}
+
+{% block title %}{{ user }}{% endblock %}
+
+{% block content %}
+<div class="container">
+
+  <div class="row">
+    <div class="col-sm-12">
+    <div class="media" style="margin-bottom: 20px">
+      <img src="{{ user.get_avatar_url }}" style="height:100px; width:100px" class="mr-3 rounded">
+      <div class="media-body">
+        <h5 class="mt-0">{{ user }} {% if current_interval != finished_interval %}{{ current_interval }}{% endif %}</h5>
+        {% if user.job %}{{ user.job }}<br>{% endif %}
+        {% if not user.is_boss %}Менеджер:
+          {% if manager %}
+          <a href="{{ manager.get_absolute_url }}">
+            <img src="{{ manager.get_avatar_url }}" style="height:25px" class="rounded">&nbsp;{{ manager }}
+          </a>
+          {% else %}
+            Не указан
+          {% endif %}<br>
+        {% endif %}
+        {% if summary_url %}<strong><a href="{{ summary_url }}">Сводка по сотруднику</a></strong>{% endif %}
+      </div>
+    </div>
+
+    {% if current_goal %}
+      <div class="alert alert-info" role="alert">
+          <h4><a href="{{ current_goal.get_absolute_url }}">Цели на {{ current_interval }}</a></h4>
+        {{ current_goal.text|linebreaksbr }}
+      </div>
+    {% elif request.user == manager %}
+      <p><a href="{{ current_interval_create_goal_url }}">Поставить цели на {{ current_interval }}</a></p>
+    {% endif %}
+
+      {% if request.user == manager and next_interval %}
+        {% if next_goal %}
+          <p><a href="{{ next_goal.get_absolute_url }}">Цели на {{ next_interval }}</a></p>
+        {% else %}
+          <p><a href="{{ next_interval_create_goal_url }}">Поставить цели на {{ next_interval }}</a></p>
+        {% endif %}
+      {% endif %}
+
+      {% if subordinates %}
+        Подчиненные:
+        <ul style="list-style: none;">
+          {% for subordinate in subordinates %}
+          <li>
+            <a href="{{ subordinate.get_absolute_url }}"><img src="{{ subordinate.get_avatar_url }}" style="height:25px" class="rounded">&nbsp;{{ subordinate }}</a>
+            {% if request.user.is_staff or user == request.user %}
+              self-review
+              {% if subordinate.self_review %}
+                <a href="{{ subordinate.self_review.get_absolute_url }}">
+                <span class="badge {{ subordinate.self_review.status|status2bootstraplabel }}">
+                  {{ subordinate.self_review.status_human }}
+                </span></a>
+              {% else %}
+                <span class="badge badge-secondary">Не написал</span>
+              {% endif %}
+              /
+                <a href="{% url 'users:choose-peers' current_interval subordinate.email %}">Фидбэк</a>:
+                    {% if subordinate.peers_approved|length %}<span class="badge badge-pill badge-success" title="Готово: {{ subordinate.peers_approved|join:", " }}">{{ subordinate.peers_approved|length }}</span>{% endif %}
+                    {% if subordinate.peers_require_approval|length %}<span class="badge badge-pill badge-warning" title="Ждёт одобрения: {{ subordinate.peers_require_approval|join:", " }}">{{ subordinate.peers_require_approval|length }}</span>{% endif %}
+                    {% if subordinate.peers_draft|length %}<span class="badge badge-pill badge-secondary" title="Не написали: {{ subordinate.peers_draft|join:", " }}">{{ subordinate.peers_draft|length }}</span>{% endif %}
+                    {% if not subordinate.peers|length %}<span class="badge">Нет пиров</span>{% endif %}
+              /
+                 Оценил: <span class="badge">{{ subordinate.current_written_reviews|length }}
+                {% if subordinate.current_written_reviews|length != subordinate.current_reviews|length %}из
+                  {{ subordinate.current_reviews|length }}{% endif %}</span>
+            {% endif %}
+          </li>
+          {% endfor %}
+        </ul>
+      <hr>
+      {% endif %}
+
+    {% if current_interval and user == request.user %}
+      <h3>Статус {{ current_interval }}</h3>
+
+      <ol>
+        <li>
+          <a href="{% url 'users:choose-peers' current_interval user.email %}">Выбрать респондентов</a>
+          <span class="badge badge-pill {% if current_peers|length > 2 %}badge-success{% else %}badge-danger{% endif %}">
+          {% if current_peers %}{{ current_peers|length }}{% else %}Не выбраны{% endif %}
+          </span>
+        </li>
+
+        <li>
+          {% if current_peers %}
+          <a href="{{ current_self_review_url }}">Написать self-review</a>
+          <span class="badge badge-pill {{ current_self_review.status|status2bootstraplabel }}"
+                title="{% if current_self_review %}Обновлено {{ current_self_review.modified }}{% endif %}"
+          >{% if current_self_review %}{{ current_self_review.status_human }}{% else %}Не написан{% endif %}</span>
+          {% else %} <span class="text-muted">Написать self-review</span>
+            <span class="badge">сначала выберите респондентов</span>{% endif %}
+        </li>
+
+        <li>
+          {% if not pending_reviews and not approved_reviews and not draft_reviews and not rejected_reviews %}<span class="text-muted">Оценить работу коллег</span>{% else %}
+          <a href="{% url 'reviews:add-reviews' current_interval %}">Оценить работу коллег</a>
+            Готово: <span class="badge badge-pill badge-success">{{ approved_reviews|length }}</span>
+            {% if pending_reviews %}Ожидают проверки: <span class="badge badge-pill badge-warning">{{ pending_reviews|length }}</span>{% endif %}
+            {% if rejected_reviews %}Требуют доработки: <span class="badge badge-pill badge-danger">{{ rejected_reviews|length }}</span>{% endif %}
+            {% if draft_reviews %}Осталось написать: <span class="badge badge-pill badge-secondary">{{ draft_reviews|length }}</span>{% endif %}
+          {% endif %}
+        </li>
+
+        {% if subordinates %}
+        <li>
+          <a href="{% url 'reviews:approve-reviews' current_interval %}">Провалидировать фидбэк</a>
+        </li>
+        {% endif %}
+
+        {% if subordinates %}
+        <li>Подвести итоги с подчинёнными</li>
+        {% endif %}
+
+        {% if manager %}
+        <li>Подвести итоги с менеджером [{{ manager }}]</li>
+        {% endif %}
+      </ol>
+
+    {% endif %}
+
+    </div>
+  </div>
+
+</div>
+{% endblock content %}
+

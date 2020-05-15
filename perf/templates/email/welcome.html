@@ -1,0 +1,51 @@
+<!-- start copy -->
+<tr>
+  <td align="left" bgcolor="#ffffff" style="padding: 24px; font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif; font-size: 16px; line-height: 24px;">
+    <p>Привет!</p>
+
+    <p>Мы запускаем ежеквартальный Performance Review {{ current_interval }}.</p>
+
+    <p style="margin-left:20px;">Performance Review - это практика, которая помогает сотрудникам совершенствоваться,
+      повышать свою мотивацию, решать организационные проблемы, т.е. делать лучше себя и своё окружение.
+      <br><a href="{{ CONTENT_DESCRIPTION_PAGE }}">Подробнее в wiki</a>
+    </p>
+
+    <p>Твой первый шаг - залогиниться в <a href="https://{{ domain }}/">https://{{ domain }}/</a> через gmail почту {{ user.email }}.</p>
+  </td>
+</tr>
+<!-- end copy -->
+
+<!-- start button -->
+<tr>
+  <td align="left" bgcolor="#ffffff">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr>
+        <td align="center" bgcolor="#ffffff" style="padding: 12px;">
+          <table border="0" cellpadding="0" cellspacing="0">
+            <tr>
+              <td align="center" bgcolor="#1a82e2" style="border-radius: 6px;">
+                <a href="https://{{ domain }}/" target="_blank" style="display: inline-block; padding: 16px 36px; font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif; font-size: 16px; color: #ffffff; text-decoration: none; border-radius: 6px;">Поехали</a>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- end button -->
+
+<!-- start copy -->
+<tr>
+  <td align="left" bgcolor="#ffffff" style="padding: 24px; font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif; font-size: 16px; line-height: 24px;">
+    <p>Тебя ждёт форма выбора коллег, которые будут оценивать твою работу.
+    На втором этапе предстоит написать self-review, в том числе, чтобы коллегам было удобней дать обратную связь.</p>
+
+    <p>Чтобы было проще, мы подготовили <a href="{{ CONTENT_TIPS_PAGE }}">советы и рекомендации</a>.</p>
+
+    <p>Прошу это сделать до {{ deadline|date:"d.m.Y" }}.</p>
+
+    <p><i>{{ email_signature }}</i></p>
+  </td>
+</tr>
+<!-- end copy -->

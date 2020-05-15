@@ -1,0 +1,49 @@
+<!-- start copy -->
+<tr>
+  <td align="left" bgcolor="#ffffff" style="padding: 24px; font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif; font-size: 16px; line-height: 24px;">
+    <p>
+      {{ review.target }} запросил обратную связь по своей работе в {{ review.interval }}:
+    </p>
+
+    <p>
+      {{ selfreview.text|linebreaksbr }}
+    </p>
+  </td>
+</tr>
+<!-- end copy -->
+
+<!-- start button -->
+<tr>
+  <td align="left" bgcolor="#ffffff" style="padding: 24px; font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif; font-size: 16px; line-height: 24px;">
+
+    <p>Прошу написать максимально развёрнутый фидбэк
+    Не стоит писать коротких отзывов из одного предложения, к сожалению, подобный
+    фидбэк неэффективен и не принесёт коллеге пользы.</p>
+
+    <p>Критерии:</p>
+    <ul>
+      <li>конструктивный: подсказывает, что человеку нужно делать или перестать делать;</li>
+      <li>конкретный: содержит факты, подробности. "Было некомфортно работать с Петей" – недостаточно для понимания ситуации.</li>
+      <li>личный: говорим за себя, не транслируем чужое мнение;</li>
+      <li>не нужно выдумывать какие-то факты, выберите пункт "Не взаимодействовал, оценить не могу".</li>
+    </ul>
+
+
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr>
+        <td align="center" bgcolor="#ffffff" style="padding: 12px;">
+          <table border="0" cellpadding="0" cellspacing="0">
+            <tr>
+              <td align="center" bgcolor="#1a82e2" style="border-radius: 6px;">
+                <a href="https://{{ domain }}{{ review.get_absolute_url }}" target="_blank"
+                   style="display: inline-block; padding: 16px 36px; font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif; font-size: 16px; color: #ffffff; text-decoration: none; border-radius: 6px;">Оставить фидбэк</a>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- end button -->
+

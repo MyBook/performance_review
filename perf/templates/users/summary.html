@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% load static bootstrap_filters %}
+
+{% block title %}{{ user }}{% endblock %}
+
+{% block content %}
+<div class="container">
+
+  <div class="row">
+    <div class="col-sm-12">
+      <h2>{{ user }} {% if current_interval != finished_interval %}{{ current_interval }}{% endif %}</h2>
+      {% if user.job %}<h6>{{ user.job }}</h6>{% endif %}
+      <img src="{{ user.get_avatar_url }}" style="height:100px" class="rounded">
+      <br><br>
+      {% if self_review %}
+      <div class="row">
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">Self-review</h5>
+            {{ self_review.text|linebreaksbr }}
+          </div>
+        </div>
+      </div>
+      <br>
+      {% endif %}
+      {% for review in reviews %}
+        <strong>{{ review.reviewer }}</strong> оценил работу <strong>{{ review.get_score_display }}</strong>:<br><br>
+        {{ review.text|linebreaksbr }}
+        <hr>
+      {% endfor %}
+    </div>
+  </div>
+
+</div>
+{% endblock content %}
+

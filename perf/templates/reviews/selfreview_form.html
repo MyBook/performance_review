@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+{% load static %}
+{% load crispy_forms_tags bootstrap_filters %}
+
+{% block title %}Self-review за {{ current_interval }} {% if object %}[{{ object.status_human }}]{% endif %}{% endblock %}
+
+{% block content %}
+<div class="container">
+
+  <div class="row">
+    <div class="col-sm-9">
+      <h2>Self-review {% if object %}{{ object.user }}{% endif %}
+        за {% if not object %}{{ current_interval }}
+        {% else %}{{ object.interval }} <span class="badge {{ object.status|status2bootstraplabel }}">{{ object.status_human }}</span>{% endif %}
+      </h2>
+      {% if not object or object.is_editable %}
+      <p>Самые важные результаты твоей работы в квартале и планы по росту и развитию:</p>
+
+      <p>Это пример вопросов, которые ты можешь задать себе при формировании оценки своей работы:<br>
+      - над какими задачами я работал и какие из них я довел до конца?<br>
+      - что я узнал нового в этом квартале?<br>
+      - какие проблемы были и как я их преодолел?<br>
+      - что я сделал бы по-другому или я давал обещания, но не довел до конца?<br>
+      - чем можно похвалиться перед коллегами?<br></p>
+
+      <p><strong>Ответ будет доступен только твоим ревьюерам{% if manager %} и менеджеру{% endif %}.</strong></p>
+      {% endif %}
+
+      {% if not object or object.is_editable %}
+        {% if manager %}
+        <p>{{ manager }} прочтёт self-review и поможет улучшить его.</p>
+        {% endif %}
+      {% endif %}
+    </div>
+    {% if object.is_rejected %}
+    <div class="alert alert-warning" role="alert">
+      <h4 class="alert-heading">{{ object.status_human }}!</h4>
+      <b>{{ object.user.manager }}</b> попросил внести правки в self-review:<br>
+      {{ object.comment|linebreaksbr }}
+    </div>
+    {% endif %}
+  </div>
+  <div class="row">
+    <div class="col-sm-8">
+      <form method="post">{% csrf_token %}
+        {% if object and not object.is_editable %}
+          {{ review_form.text.value|linebreaksbr }}
+        {% else %}
+          <fieldset>
+            {{ review_form|crispy }}
+          </fieldset>
+        {% endif %}
+        <div class="form-group">
+          {% if not object or object.is_editable %}
+            {% if not object or object.user == request.user %}
+            <button type="submit" class="btn" name="action" value="draft">Сохранить черновик</button>
+            <button type="submit" class="btn btn-primary" name="action" value="pending"> Отправить {{ object.user.manager|default:"" }}</button>
+            {% endif %}
+          {% elif object.is_pending %}
+            <button class="btn" disabled>Черновик проверяет {{ object.user.manager }}</button>
+          {% else %}
+            <button class="btn" disabled>{{ object.user.manager }} одобрил</button>
+          {% endif %}
+        </div>
+      </form>
+    </div>
+    <div class="col-sm-4" style="color:gray; font-size: 80%">
+      Каким должен быть self-review:<br>
+      - кратко, без воды, в основе - факты;<br>
+      - честно, без приукрашательств и самоуничижения, как плюсы, так слабые места;<br>
+      - не должен быть формальной отпиской, ревью полезен в том числе для рефлексии;<br><br>
+
+      {% if not previous_self_review and CONTENT_SELFREVIEW_EXAMPLE %}<a href="{{ CONTENT_SELFREVIEW_EXAMPLE }}">Пример self-review</a>{% else %}
+
+      <a href="{{ previous_self_review.get_absolute_url }}">Предыдущий
+        self-review {{ previous_self_review.user }} от {{ previous_self_review.interval }}</a><br><br>
+      {% endif %}
+    </div>
+
+    {% if is_manager_view %}
+    <div class="col-sm-8">
+      <hr>
+      <h3>Проверка self-review</h3>
+
+      <p>{{ object.user }} выбрал респондентов:</p>
+        <ul>
+          {% for reviewer in reviewers %}
+            <li>{{ reviewer }} <span class="text-muted small">{{ reviewer.job }}</span></li>
+          {% endfor %}
+          <li><a href="{% url 'users:choose-peers' current_interval object.user.email %}">Изменить</a></li>
+      </ul>
+
+      <form method="post">{% csrf_token %}
+        {{ approve_form|crispy }}
+        <div class="form-group">
+          <button type="submit" class="btn btn-warning" name="action" value="rejected">Посоветовать улучшить</button>
+          <button type="submit" class="btn btn-success" name="action" value="published">Одобрить self-review и выбор {{ reviewers|length }} пиров</button>
+        </div>
+      </form>
+    </div>
+
+    <div class="col-sm-4" style="color:gray; font-size: 80%">
+      Задача менеджера - убедиться, что self-review отвечает критериям хорошего self-review (см. правую колонку выше)
+      и в случае необходимости предложить исправления в поле ниже. Нужно проверить выбор коллег которые будут давать обратную связь.
+
+    {% endif %}
+  </div>
+
+</div>
+{% endblock content %}

@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% load static crispy_forms_tags bootstrap_filters %}
+
+{% block title %}Оценить работу коллег{% endblock %}
+
+{% block content %}
+<div class="container">
+
+  <div class="row">
+    <div class="col-sm-9">
+      <h2>Оценить работу коллег за {{ current_interval }}</h2>
+      <p>Вот кто запросил обратную связь о результатах своей работы:</p>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-sm-8">
+      <ul>
+        {% for review in current_reviews %}
+          <li>
+            <a href="{{ review.get_absolute_url }}">{{ review.target }}</a>
+            <span class="badge badge-pill {{ review.status|status2bootstraplabel }}">{{ review.status_human }}</span>
+          </li>
+        {% endfor %}
+      </ul>
+    </div>
+    <div class="col-sm-4" style="color:gray; font-size: 80%">
+    </div>
+  </div>
+
+</div>
+{% endblock content %}

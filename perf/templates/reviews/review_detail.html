@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+{% load static %}
+{% load crispy_forms_tags bootstrap_filters %}
+
+{% block title %}Оценка работы {{ review.target }} за {{ review.interval }}{% endblock %}
+
+{% block content %}
+<div class="container">
+
+  <div class="row">
+    <div class="col-sm-12">
+      <h2>Оценка работы {{ review.target }} за {{ review.interval }}
+        <span class="badge {{ object.status|status2bootstraplabel }}">{{ object.status_human }}</span>
+      </h2>
+      {% if review.reviewer != request.user %}<h4 style="color:gray">от {{ review.reviewer }}</h4>{% endif %}
+    </div>
+  </div>
+  <div class="row">
+    <div class="card">
+      <div class="card-body">
+        <h5 class="card-title">Self-review</h5>
+        {{ self_review.text|linebreaksbr }}
+      </div>
+    </div>
+  </div>
+  <div class="row" style="margin-top: 20px">
+    <div class="alert alert-warning" role="alert">
+      Ваша оценка и комментарий <strong>НЕ</strong> будут видны сотруднику на этом сайте.<br>
+      Зато их увидит {{ review.target.manager }}, который этот фидбэк передаст ему в рамках встречи 1-1.
+    </div>
+  </div>
+  <div class="row align-items-end" style="margin-top: 20px">
+    <div class="col-sm-8">
+      <h2>Насколько работа сотрудника соответствовала ожиданиям?</h2>
+      <form method="post">{% csrf_token %}
+        <fieldset {% if not object.is_editable %}disabled{% endif %}>
+        {{ review_form|crispy }}
+        </fieldset>
+        {% if review.is_rejected %}
+          <div class="alert alert-warning" role="alert">
+            <h4 class="alert-heading">Обратная связь требует доработки</h4>
+            <b>{{ review.target.manager }}</b> попросил внести правки в self-review:<br>
+            {{ object.comment|linebreaksbr }}
+          </div>
+        {% endif %}
+        <div class="form-group">
+          {% if object.is_editable %}
+            {% if object.reviewer == request.user %}
+            <button type="submit" class="btn"
+                    name="action" value="draft">Сохранить черновик</button>
+            <button type="submit" class="btn btn-primary"
+                    name="action" value="pending">{% if review.target.manager != request.user %}Отправить руководителю [{{ review.target.manager }}]{% else %}Оценить{% endif %}</button>
+            {% endif %}
+          {% elif object.is_pending %}
+            <button class="btn" disabled>Комменатрий проверяет {{ review.target.manager }}</button>
+          {% else %}
+            <button class="btn" disabled>{{ review.target.manager }} одобрил</button>
+          {% endif %}
+        </div>
+      </form>
+    </div>
+    <div class="col-sm-4" style="color:gray; font-size: 80%; padding-bottom: 70px">
+      <div>
+      Фидбэк должен быть:<br><br>
+      конструктивный (в идеале подсказвает что человеку нужно делать или перестать делать);<br><br>
+      конкретный: содержит факты, подробности. Можете использовать конкретные примеры. "Было некомфортно работать с Петей" – недостаточно для понимания ситуации.<br><br>
+      личный: говорим за себя, не транслируем чужое мнение;<br><br>
+      если вы не пересекались в рабочих моментах, не нужно выдумывать какие-то факты, так и напишите<br>
+      </div>
+
+      {% if previous_review %}
+      <div style="margin-top: 20px">
+        <a href="{{ previous_review.get_absolute_url }}">Ваш предыдущий
+          фидбэк на {{ previous_review.target }} от {{ previous_review.interval }}</a><br><br>
+        {% endif %}
+      </div>
+    </div>
+
+    {% if object and object.is_pending and object.target.manager == request.user %}
+    <div class="col-sm-8">
+      <hr>
+      <h3>Проверка фидбэка</h3>
+      <p>Задача менеджера - убедиться, что фидбэк отвечает критериям хорошей обратной связи (см. правую колонку)
+      и в случае необходимости предложить исправления в поле ниже.</p>
+      <form method="post">{% csrf_token %}
+        {{ approve_form|crispy }}
+        <div class="form-group">
+          <button type="submit" class="btn btn-warning" name="action" value="rejected">Посоветовать улучшить</button>
+          <button type="submit" class="btn btn-success" name="action" value="hidden">Всё ОК</button>
+        </div>
+      </form>
+    </div>
+    {% endif %}
+
+  </div>
+
+</div>
+{% endblock content %}
